@@ -25,6 +25,14 @@ if (lastRunOffWorkDate === today) {
   // 获取当前时间
   let currentTime = new Date();
 
+  // 设定上班时间为 9 点
+  let workStartTime = new Date();
+  workStartTime.setHours(9, 0, 0, 0);
+
+  // 如果于 9 点前到达，将到达时间设为 9 点
+  if (currentTime < workStartTime) {
+    currentTime = workStartTime;
+  }
   // 计算延迟后的通知时间
   let reminderTime = new Date(currentTime.getTime() + delayMinutes * 60 * 1000);
 

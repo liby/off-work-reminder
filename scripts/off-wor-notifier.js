@@ -15,6 +15,15 @@ try {
   lastRunOffWorkDate = null;  // 如果键不存在，将 lastRunOffWorkDate 设为 null
 }
 
+const formatTime = (date) => {
+  return date.toLocaleTimeString('zh-CN', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  });
+};
+
+
 // 检查是否已经记录过今天的日期
 if (lastRunOffWorkDate === today) {
   console.log("今天的通知已经设置，不再重复设置。");
@@ -43,12 +52,12 @@ if (lastRunOffWorkDate === today) {
   scheduledOffWorkNotification.setTriggerDate(reminderTime);
   await scheduledOffWorkNotification.schedule();
 
-  console.log("通知已设置，将在 " + reminderTime.toLocaleString() + " 提醒你下班。");
+  console.log("通知已设置，将在 " + formatTime(reminderTime) + " 提醒你下班。");
 
   // 设置完计划通知后，立即发送一次确认通知，告知当日下班时间
   let immediateConfirmNotification = new Notification();
-  immediateConfirmNotification.title = "下班时间已设置";
-  immediateConfirmNotification.body = "今天的下班时间是：" + reminderTime.toLocaleString();
+  immediateConfirmNotification.title = "通知已设置";
+  immediateConfirmNotification.body = "今天的下班时间是：" + formatTime(reminderTime);
   await immediateConfirmNotification.schedule();
 }
 

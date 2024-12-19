@@ -24,6 +24,13 @@ const formatTime = (date) => {
 const calculateActualEndTime = (currentTime, params) => {
   const now = new Date(currentTime);
   const noon = new Date(currentTime).setHours(12, 0, 0, 0);
+  const workStartTime = new Date().setHours(9, 0, 0, 0);
+
+  // 计算实际开始时间
+  const effectiveStartTime = currentTime < workStartTime ? new Date(workStartTime) : currentTime;
+
+  // 计算延迟的分钟数（如果早到则为 0）
+  const delayMinutes = Math.max(0, Math.floor((effectiveStartTime - workStartTime) / (60 * 1000)));
 
   // 如果是 12 点后连接 WiFi，直接使用设定的下班时间
   if (now.getTime() > noon) {
@@ -33,11 +40,15 @@ const calculateActualEndTime = (currentTime, params) => {
     return endTime;
   }
 
-  // 如果是 12 点前，需要补足提前午休的时间
+  // 如果是 12 点前，需要考虑延迟时间和提前午休时间
   const [hours, minutes] = params.workEndTime.split(':');
   const endTime = new Date(currentTime);
   endTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-  return new Date(endTime.getTime() + (params.lunchBreakAdvanceMinute * 60 * 1000));
+
+  // 如果是 12 点前到达，则需要考虑当天的提前午休时间
+  return new Date(endTime.getTime() +
+    (delayMinutes * 60 * 1000) +
+    (params.lunchBreakAdvanceMinute * 60 * 1000));
 };
 
 // 获取当前日期的字符串表示
